@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_21_063105) do
+ActiveRecord::Schema.define(version: 2021_03_21_070258) do
 
   create_table "institutions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name"
@@ -20,4 +20,15 @@ ActiveRecord::Schema.define(version: 2021_03_21_063105) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "students", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "full_name"
+    t.text "address"
+    t.string "email"
+    t.bigint "institution_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["institution_id"], name: "index_students_on_institution_id"
+  end
+
+  add_foreign_key "students", "institutions"
 end
