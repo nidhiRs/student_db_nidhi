@@ -1,6 +1,6 @@
 <p id="notice"><%= notice %></p>
 
-<h1>Students</h1>
+<h1>Pending Students</h1>
 
 <table>
   <thead>
@@ -14,22 +14,16 @@
   </thead>
 
   <tbody>
-    <% @students.each do |student| %>
+    <% @pending_students.each do |student| %>
       <tr>
         <td><%= student.full_name %></td>
         <td><%= student.address %></td>
         <td><%= student.email %></td>
         <td><%= student.institution.name %></td>
-        <td><%= link_to 'Show', student %></td>
-        <td><%= link_to 'Edit', edit_student_path(student) %></td>
+        <td><%= link_to 'Approve', approve_student_student_path(student), method: :post %></td>
         <td><%= link_to 'Destroy', student, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
-
-<br>
-
-<%= link_to 'New Student', new_student_path %>
-<br>
-<%= link_to 'Pending Students List', pending_students_path %>
+<%= link_to 'Back to Student List', students_path %>
