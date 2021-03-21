@@ -1,9 +1,20 @@
 class StudentsController < ApplicationController
+  helper_method :sort_column, :sort_direction
+  skip_before_action :authenticate_user!, only: [:register, :register_student]
   before_action :set_student, only: %i[ show edit update destroy approve_student]
+  STUDENT_PER_PAGE = 10
 
   # GET /students or /students.json
   def index
-    @students = Student.all
+    @students = Student.joins(:institution)
+    if params[:full_name].present? && params[:name].present?
+      @students = @students.where('students.full_name LIKE ? AND institutions.name LIKE ?', "%#{params[:full_name]}%","%#{params[:name]}%")
+    elsif params[:full_name].present?
+      @students = Student.search_by_full_name(params[:full_name])
+    elsif params[:name].present?
+      @students = @students.where('institution.name LIKE ?', "%#{params[:name]}%")
+    end
+    @students = @students.order(sort_column + " " + sort_direction)
   end
 
   # GET /students/1 or /students/1.json
@@ -84,6 +95,14 @@ class StudentsController < ApplicationController
   end
 
   private
+
+  def sort_column
+    ['students.full_name', 'institutions.name'].include?(params[:sort]) ? params[:sort] : "students.full_name"
+  end
+
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+  end
     # Use callbacks to share common setup or constraints between actions.
     def set_student
       @student = Student.find(params[:id])
