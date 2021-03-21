@@ -1,0 +1,3 @@
+rails g scaffold Institution name:string address:text phone:string
+rails g scaffold Student full_name:string address:text email:string institution:references
+rails g migration add_column_to_students

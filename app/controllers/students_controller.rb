@@ -1,5 +1,5 @@
 class StudentsController < ApplicationController
-  before_action :set_student, only: %i[ show edit update destroy ]
+  before_action :set_student, only: %i[ show edit update destroy approve_student]
 
   # GET /students or /students.json
   def index
@@ -56,6 +56,33 @@ class StudentsController < ApplicationController
     end
   end
 
+  def register
+    @student = Student.new
+  end
+
+  def register_student
+    @student = Student.new(student_params)
+    @student.pending = true
+    if @student.save
+      redirect_to register_path
+      # format.html { redirect_to @student, notice: "Student was successfully registered." }
+      # format.json { render :register, status: :ok, location: @student }
+    else
+        format.html { render :register, status: :unprocessable_entity }
+        format.json { render json: @student.errors, status: :unprocessable_entity }
+      end  
+  end
+
+  def pending_students
+    @pending_students = Student.pending_students
+  end
+
+  def approve_student
+    if @student.update_attributes(pending: false)
+      redirect_to pending_students_path
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_student
@@ -64,6 +91,6 @@ class StudentsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def student_params
-      params.require(:student).permit(:full_name, :address, :email, :institution_id)
+      params.require(:student).permit(:full_name, :address, :email, :mobile, :institution_id)
     end
 end
