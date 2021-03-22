@@ -2,7 +2,6 @@ class StudentsController < ApplicationController
   helper_method :sort_column, :sort_direction
   skip_before_action :authenticate_user!, only: [:register, :register_student]
   before_action :set_student, only: %i[ show edit update destroy approve_student]
-  STUDENT_PER_PAGE = 10
 
   # GET /students or /students.json
   def index
@@ -12,7 +11,7 @@ class StudentsController < ApplicationController
     elsif params[:full_name].present?
       @students = Student.search_by_full_name(params[:full_name])
     elsif params[:name].present?
-      @students = @students.where('institution.name LIKE ?', "%#{params[:name]}%")
+      @students = @students.search_by_name(params[:name])
     end
     @students = @students.order(sort_column + " " + sort_direction)
   end
@@ -81,7 +80,7 @@ class StudentsController < ApplicationController
     else
         format.html { render :register, status: :unprocessable_entity }
         format.json { render json: @student.errors, status: :unprocessable_entity }
-      end  
+      end
   end
 
   def pending_students
@@ -105,7 +104,7 @@ class StudentsController < ApplicationController
   end
     # Use callbacks to share common setup or constraints between actions.
     def set_student
-      @student = Student.find(params[:id])
+      @student = Student.unscoped.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
